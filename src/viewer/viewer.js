@@ -1673,6 +1673,13 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			camera.rotation.z = this.scene.view.yaw;
 		}
 
+		if(this.overrideControls)
+		{
+			camera.rotation = this.overrideEulerRotation;
+		}
+
+
+
 		{ // update clip boxes
 			//let boxes = this.scene.profiles.reduce( (a, b) => {return a.boxes.concat(b.boxes)}, []);
 			//boxes = boxes.concat(this.scene.volumes.filter(v => v.clip));
