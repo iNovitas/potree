@@ -1483,7 +1483,7 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 		let width = this.renderArea.clientWidth;
 		let height = this.renderArea.clientHeight;
 
-		this.renderer = new THREE.WebGLRenderer({premultipliedAlpha: false});
+		this.renderer = new THREE.WebGLRenderer({premultipliedAlpha: false, alpha : true});
 		this.renderer.setSize(width, height);
 		this.renderer.autoClear = false;
 		this.renderArea.appendChild(this.renderer.domElement);
@@ -1840,7 +1840,11 @@ class PotreeRenderer{
 			let aspect = width / height;
 			
 			viewer.scene.camera.aspect = aspect;
-			viewer.scene.camera.updateProjectionMatrix();
+			if(!viewer.scene.overrideControls)
+			{
+				viewer.scene.camera.updateProjectionMatrix();
+			}
+
 			
 			viewer.renderer.setSize(width, height);
 		}
