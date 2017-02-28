@@ -172,6 +172,7 @@ Potree.LasLazBatcher = function(node){
 			var colors = new Uint8Array(e.data.color);
 			var intensities = e.data.intensity;
 			var classifications = new Uint8Array(e.data.classification);
+			var timestamps = e.data.timestamps;
 			var returnNumbers = new Uint8Array(e.data.returnNumber);
 			var numberOfReturns = new Uint8Array(e.data.numberOfReturns);
 			var pointSourceIDs = new Uint16Array(e.data.pointSourceID);
@@ -191,6 +192,7 @@ Potree.LasLazBatcher = function(node){
 			geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3, true));
 			geometry.addAttribute('intensity', new THREE.BufferAttribute(new Float32Array(intensities), 1));
 			geometry.addAttribute('classification', new THREE.BufferAttribute(classifications, 1));
+			geometry.addAttribute('time', new THREE.BufferAttribute(new Float32Array(times), 1));
 			geometry.addAttribute('returnNumber', new THREE.BufferAttribute(returnNumbers, 1));
 			geometry.addAttribute('numberOfReturns', new THREE.BufferAttribute(numberOfReturns, 1));
 			geometry.addAttribute('pointSourceID', new THREE.BufferAttribute(pointSourceIDs, 1));

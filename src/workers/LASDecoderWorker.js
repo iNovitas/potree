@@ -64,10 +64,11 @@ onmessage = function(event){
 	var maxs = event.data.maxs;
 	var bbOffset = event.data.bbOffset;
 	
-	var temp = new ArrayBuffer(4);
+	var temp = new ArrayBuffer(8);
 	var tempUint8 = new Uint8Array(temp);
 	var tempUint16 = new Uint16Array(temp);
 	var tempFloat32 = new Float32Array(temp);
+	var tempFloat64 = new Float64Array(temp);
 	var tempInt32 = new Int32Array(temp);
 	var bufferView = new Uint8Array(buffer);
 	
@@ -75,6 +76,7 @@ onmessage = function(event){
 	var cBuff = new ArrayBuffer(numPoints*3);
 	var iBuff = new ArrayBuffer(numPoints*4);
 	var clBuff = new ArrayBuffer(numPoints);
+	var tBuff = new ArrayBuffer(numPoints*8);
 	var rnBuff = new ArrayBuffer(numPoints);
 	var nrBuff = new ArrayBuffer(numPoints);
 	var psBuff = new ArrayBuffer(numPoints * 2);
@@ -83,6 +85,7 @@ onmessage = function(event){
 	var colors = new Uint8Array(cBuff);
 	var intensities = new Float32Array(iBuff);
 	var classifications = new Uint8Array(clBuff);
+	var timestamps = new Float64Array(tBuff);
 	var returnNumbers = new Uint8Array(rnBuff);
 	var numberOfReturns = new Uint8Array(nrBuff);
 	var pointSourceIDs = new Uint16Array(psBuff);
@@ -149,19 +152,31 @@ onmessage = function(event){
 		tempUint8[1] = bufferView[i*pointSize+19];
 		var pointSourceID = tempUint16[0];
 		pointSourceIDs[i] = pointSourceID;
+
+		// GPS TIME
+		tempUint8[0] = bufferView[i*pointSize+20];
+		tempUint8[1] = bufferView[i*pointSize+21];
+		tempUint8[2] = bufferView[i*pointSize+22];
+		tempUint8[3] = bufferView[i*pointSize+23];
+		tempUint8[4] = bufferView[i*pointSize+24];
+		tempUint8[5] = bufferView[i*pointSize+25];
+		tempUint8[6] = bufferView[i*pointSize+26];
+		tempUint8[7] = bufferView[i*pointSize+27];
+		var timestamp = tempFloat64[0];
+		timestamps[i] = timestamp;
 		
 		// COLOR, if available
 		if(pointFormatID === 2){
-			tempUint8[0] = bufferView[i*pointSize+20];
-			tempUint8[1] = bufferView[i*pointSize+21];
+			tempUint8[0] = bufferView[i*pointSize+28];
+			tempUint8[1] = bufferView[i*pointSize+29];
 			var r = tempUint16[0];
 			
-			tempUint8[0] = bufferView[i*pointSize+22];
-			tempUint8[1] = bufferView[i*pointSize+23];
+			tempUint8[0] = bufferView[i*pointSize+30];
+			tempUint8[1] = bufferView[i*pointSize+31];
 			var g = tempUint16[0];
 			
-			tempUint8[0] = bufferView[i*pointSize+24];
-			tempUint8[1] = bufferView[i*pointSize+25];
+			tempUint8[0] = bufferView[i*pointSize+32];
+			tempUint8[1] = bufferView[i*pointSize+33];
 			var b = tempUint16[0];
 			
 			colors[3*i+0] = r / 255;
@@ -175,6 +190,7 @@ onmessage = function(event){
 		color: cBuff, 
 		intensity: iBuff,
 		classification: clBuff,
+		timestamp: tBuff,
 		returnNumber: rnBuff,
 		numberOfReturns: nrBuff,
 		pointSourceID: psBuff,
@@ -186,6 +202,7 @@ onmessage = function(event){
 		message.color, 
 		message.intensity,
 		message.classification,
+		message.timestamp,
 		message.returnNumber,
 		message.numberOfReturns,
 		message.pointSourceID];

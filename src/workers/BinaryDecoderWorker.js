@@ -114,6 +114,18 @@ onmessage = function(event){
 
 			attributeBuffers[pointAttribute.name] = { buffer: buff, attribute: pointAttribute};
 
+		}else if(pointAttribute.name === Potree.PointAttribute.TIMESTAMP.name){
+
+			var buff = new ArrayBuffer(numPoints);
+			var timestamp = new Float32Array(buff);
+
+			for(var j = 0; j < numPoints; j++){
+				var timestamp = cv.getUint32(offset + j*pointAttributes.byteSize) * 0.01;
+				timestamps[j] = timestamp;
+			}
+
+			attributeBuffers[pointAttribute.name] = { buffer: buff, attribute: pointAttribute};
+
 		}else if(pointAttribute.name === Potree.PointAttribute.NORMAL_SPHEREMAPPED.name){
 
 			var buff = new ArrayBuffer(numPoints*4*3);

@@ -82,6 +82,8 @@ Potree.BinaryLoader.prototype.parse = function(node, buffer){
 					geometry.addAttribute("intensity", new THREE.BufferAttribute(new Float32Array(buffer), 1));
 				}else if(parseInt(property) === Potree.PointAttributeNames.CLASSIFICATION){
 					geometry.addAttribute("classification", new THREE.BufferAttribute(new Uint8Array(buffer), 1));
+				}else if(parseInt(property) === Potree.PointAttributeNames.TIMESTAMP){
+					geometry.addAttribute("classification", new THREE.BufferAttribute(new Float32Array(buffer), 1));
 				}else if(parseInt(property) === Potree.PointAttributeNames.NORMAL_SPHEREMAPPED){
 					geometry.addAttribute("normal", new THREE.BufferAttribute(new Float32Array(buffer), 3));
 				}else if(parseInt(property) === Potree.PointAttributeNames.NORMAL_OCT16){

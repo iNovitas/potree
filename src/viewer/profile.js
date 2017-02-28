@@ -135,6 +135,7 @@ Potree.Viewer.Profile = class ProfileWindow{
 					color: points.color ? points.color[j] : [0, 0, 0],
 					intensity: points.intensity ? points.intensity[j] : 0,
 					classification: points.classification ? points.classification[j] : 0,
+					timestamp: points.timestamp ? points.timestamp[j] : 0,
 					returnNumber: points.returnNumber ? points.returnNumber[j] : 0,
 					numberOfReturns: points.numberOfReturns ? points.numberOfReturns[j] : 0,
 					pointSourceID: points.pointSourceID ? points.pointSourceID[j] : 0,
@@ -228,7 +229,8 @@ Potree.Viewer.Profile = class ProfileWindow{
 			let html = 'x: ' + Math.round(10 * p.x) / 10 + ' y: ' + Math.round(10 * p.y) / 10 + ' z: ' + Math.round( 10 * p.altitude) / 10 + '  -  ';
 			html += "offset: " + p.distance.toFixed(3) + '  -  ';
 			html += "Classification: " + p.classification + '  -  ';
-			html += "Intensity: " + p.intensity;
+			html += "Intensity: " + p.intensity + '  -  ';
+			html += "Timestamp: " + p.timestamp;
 			
 			$('#profileInfo').css('color', 'yellow');
 			$('#profileInfo').html(html);
@@ -618,6 +620,10 @@ Potree.Viewer.Profile = class ProfileWindow{
 			if(points[0].hasOwnProperty("classification")){
 				header += ", classification";
 			}
+
+			if(points[0].hasOwnProperty("timestamp")){
+				header += ", timestamp";
+			}
 			
 			if(points[0].hasOwnProperty("numberOfReturns")){
 				header += ", numberOfReturns";
@@ -649,6 +655,10 @@ Potree.Viewer.Profile = class ProfileWindow{
 			
 			if(point.hasOwnProperty("classification")){
 				line += ", " + point.classification;
+			}
+
+			if(point.hasOwnProperty("timestamp")){
+				line += ", " + point.time;
 			}
 			
 			if(point.hasOwnProperty("numberOfReturns")){
@@ -723,10 +733,10 @@ Potree.Viewer.Profile = class ProfileWindow{
 		// number of letiable length records o:100 l:4
 		
 		// point data record format 104 1
-		u8View[104] = 2;
+		u8View[104] = 3;
 		
 		// point data record length 105 2
-		view.setUint16(105, 28, true);
+		view.setUint16(105, 34, true);
 		
 		// number of point records 107 4 
 		view.setUint32(107, points.length, true);
@@ -771,15 +781,21 @@ Potree.Viewer.Profile = class ProfileWindow{
 			
 			// classification
 			view.setUint8(boffset + 15, point.classification);
+
 			// scan angle rank
 			// user data
 			// point source id
 			view.setUint16(boffset + 18, point.pointSourceID);
-			view.setUint16(boffset + 20, (point.color[0] * 255), true);
-			view.setUint16(boffset + 22, (point.color[1] * 255), true);
-			view.setUint16(boffset + 24, (point.color[2] * 255), true);
+
+			// gps time (timestamp)
+			view.setFloat64(boffset + 20, point.timestamp);
+
+			// rgb color
+			view.setUint16(boffset + 28, (point.color[0] * 255), true);
+			view.setUint16(boffset + 30, (point.color[1] * 255), true);
+			view.setUint16(boffset + 32, (point.color[2] * 255), true);
 			
-			boffset += 28;
+			boffset += 34;
 		}
 		
 		// max x 179 8

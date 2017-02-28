@@ -2,16 +2,17 @@
 Potree.PointAttributeNames = {};
 
 Potree.PointAttributeNames.POSITION_CARTESIAN 	= 0;	// float x, y, z;
-Potree.PointAttributeNames.COLOR_PACKED		= 1;	// byte r, g, b, a; 	I = [0,1]
+Potree.PointAttributeNames.COLOR_PACKED			= 1;	// byte r, g, b, a; 	I = [0,1]
 Potree.PointAttributeNames.COLOR_FLOATS_1		= 2;	// float r, g, b; 		I = [0,1]
-Potree.PointAttributeNames.COLOR_FLOATS_255	= 3;	// float r, g, b; 		I = [0,255]
+Potree.PointAttributeNames.COLOR_FLOATS_255		= 3;	// float r, g, b; 		I = [0,255]
 Potree.PointAttributeNames.NORMAL_FLOATS		= 4;  	// float x, y, z;
 Potree.PointAttributeNames.FILLER				= 5;
 Potree.PointAttributeNames.INTENSITY			= 6;
 Potree.PointAttributeNames.CLASSIFICATION		= 7;
-Potree.PointAttributeNames.NORMAL_SPHEREMAPPED	= 8;
-Potree.PointAttributeNames.NORMAL_OCT16		= 9;
-Potree.PointAttributeNames.NORMAL				= 10;
+Potree.PointAttributeNames.TIMESTAMP			= 8;
+Potree.PointAttributeNames.NORMAL_SPHEREMAPPED	= 9;
+Potree.PointAttributeNames.NORMAL_OCT16			= 10;
+Potree.PointAttributeNames.NORMAL				= 11;
 
 /**
  * Some types of possible point attribute data formats
@@ -82,6 +83,10 @@ Potree.PointAttribute.INTENSITY = new Potree.PointAttribute(
 Potree.PointAttribute.CLASSIFICATION = new Potree.PointAttribute(
 		Potree.PointAttributeNames.CLASSIFICATION,
 		Potree.PointAttributeTypes.DATA_TYPE_UINT8, 1);
+
+Potree.PointAttribute.TIMESTAMP = new Potree.PointAttribute(
+		Potree.PointAttributeNames.TIMESTAMP,
+		Potree.PointAttributeTypes.DATA_TYPE_FLOAT, 1);
 
 Potree.PointAttribute.NORMAL_SPHEREMAPPED = new Potree.PointAttribute(
 		Potree.PointAttributeNames.NORMAL_SPHEREMAPPED,
