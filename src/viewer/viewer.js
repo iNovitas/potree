@@ -14,6 +14,7 @@ Potree.View = class{
 		this.yaw = Math.PI / 4;
 		this._pitch = -Math.PI / 4;
 		this.radius = 1;
+		this.roll = 0;
 		
 		this.maxPitch = Math.PI / 2;
 		this.minPitch = -Math.PI / 2;
@@ -620,6 +621,32 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 	setNavigationMode(value){
 		this.scene.view.navigationMode = value;
 	};
+
+	setProjectionMatrix(matrix)
+	{
+		this.scene.camera.projectionMatrix = matrix;
+	};
+
+	enableControlOverride()
+	{
+		this.overrideControls = true;
+	};
+
+	disableControlOverride()
+	{
+		this.overrideControls = false;
+	};
+
+	setOverrideEulerRotation(euler)
+	{
+		this.overrideEulerRotation = euler;
+	};
+
+	setOverridePosition(position)
+	{
+		this.overridePosition = position;
+	};
+
 	
 	setShowBoundingBox(value){
 		if(this.showBoundingBox !== value){
@@ -1483,7 +1510,7 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 		let width = this.renderArea.clientWidth;
 		let height = this.renderArea.clientHeight;
 
-		this.renderer = new THREE.WebGLRenderer({premultipliedAlpha: false, alpha : true});
+		this.renderer = new THREE.WebGLRenderer({premultipliedAlpha: false});
 		this.renderer.setSize(width, height);
 		this.renderer.autoClear = false;
 		this.renderArea.appendChild(this.renderer.domElement);
@@ -1671,12 +1698,18 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			camera.rotation.order = "ZXY";
 			camera.rotation.x = Math.PI / 2 + this.scene.view.pitch;
 			camera.rotation.z = this.scene.view.yaw;
+			camera.rotation.y = this.scene.view.roll;
 		}
 
 		if(this.overrideControls)
 		{
-			camera.rotation = this.overrideEulerRotation;
+			camera.setRotationFromEuler(this.overrideEulerRotation);
+			this.scene.view.pitch = camera.rotation.x-Math.PI/2;
+			this.scene.view.yaw = camera.rotation.z+Math.PI/2;
+			this.scene.view.position = camera.position.clone();
 		}
+
+
 
 
 
@@ -1840,9 +1873,9 @@ class PotreeRenderer{
 			let aspect = width / height;
 			
 			viewer.scene.camera.aspect = aspect;
-			if(!viewer.scene.overrideControls)
+			if(!viewer.overrideControls)
 			{
-				viewer.scene.camera.updateProjectionMatrix();
+				//viewer.scene.camera.updateProjectionMatrix();
 			}
 
 			
