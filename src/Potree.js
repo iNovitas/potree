@@ -193,7 +193,7 @@ Potree.getLRU = function(){
 function updateVisibilityStructures(pointclouds, camera, renderer){
 	let frustums = [];
 	let camObjPositions = [];
-	let priorityQueue = new BinaryHeap(function(x){return 1 / x.weight;});
+	let priorityQueue = new BinaryHeap(function(x){return 1/x.weight;});
 	
 	for(let i = 0; i < pointclouds.length; i++){
 		let pointcloud = pointclouds[i];
@@ -270,6 +270,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 		let node = element.node;
 		let parent = element.parent;
 		let pointcloud = pointclouds[element.pointcloud];
+
 		
 		let box = node.getBoundingBox();
 		let frustum = frustums[element.pointcloud];
@@ -355,7 +356,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 			let projFactor = (0.5 * renderer.domElement.clientHeight) / (slope * distance);
 			let screenPixelRadius = radius * projFactor;
 			
-			if(screenPixelRadius < pointcloud.minimumNodePixelSize){
+			if(screenPixelRadius < pointcloud.minimumNodePixelSize && !viewer.fullresMode){
 				continue;
 			}
 			

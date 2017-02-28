@@ -1090,7 +1090,12 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			
 			this.dispatchEvent({"type": "material_changed", "viewer": this});
 		}
-	}
+	};
+
+	forceFullResLoad(value)
+	{
+		this.fullresMode = value;
+	};
 	
 	getMaterial(){
 		return this.pointColorType;
@@ -1654,6 +1659,7 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			camera.near = result.lowestSpacing * 10.0;
 			camera.far = -this.getBoundingBox().applyMatrix4(camera.matrixWorldInverse).min.z;
 			camera.far = Math.max(camera.far * 1.5, 1000);
+
 		}
 		
 		
@@ -1875,7 +1881,7 @@ class PotreeRenderer{
 			viewer.scene.camera.aspect = aspect;
 			if(!viewer.overrideControls)
 			{
-				//viewer.scene.camera.updateProjectionMatrix();
+				viewer.scene.camera.updateProjectionMatrix();
 			}
 
 			
