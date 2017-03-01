@@ -116,11 +116,12 @@ onmessage = function(event){
 
 		}else if(pointAttribute.name === Potree.PointAttribute.TIMESTAMP.name){
 
-			var buff = new ArrayBuffer(numPoints);
-			var timestamp = new Float32Array(buff);
+			var buff = new ArrayBuffer(numPoints*4);
+			var timestamps = new Float32Array(buff);
 
 			for(var j = 0; j < numPoints; j++){
 				var timestamp = cv.getUint32(offset + j*pointAttributes.byteSize) * 0.01;
+				//var timestamp = cv.getFloat(offset + j*pointAttributes.byteSize);
 				timestamps[j] = timestamp;
 			}
 
