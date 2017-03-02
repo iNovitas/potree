@@ -27,6 +27,8 @@ Potree.webgl = {
 	vbos: {}
 };
 
+Potree.globalShift = new THREE.Vector3();
+
 Potree.scriptPath = null;
 if(document.currentScript.src){
 		Potree.scriptPath = new URL(document.currentScript.src + "/..").href;
@@ -379,7 +381,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 	Potree.updateDEMs(renderer, visibleNodes);
 
 	return {
-		visibleNodes: visibleNodes, 
+		visibleNodes: visibleNodes,
 		numVisiblePoints: numVisiblePoints,
 		lowestSpacing: lowestSpacing
 	};

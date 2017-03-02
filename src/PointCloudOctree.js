@@ -923,18 +923,18 @@ Potree.PointCloudOctree = class extends Potree.PointCloudTree{
 			renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, pixels);
 
 
-		//{ // open window with image
-		//	var br = new ArrayBuffer(width*height*4);
-		//	var bp = new Uint8Array(br);
-		//	renderer.context.readPixels( 0, 0, width, height, 
-		//		renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, bp);
-		//	
-		//	var img = pixelsArrayToImage(bp, width, height);
-		//	var screenshot = img.src;
-		//	
-		//	var w = window.open();
-		//	w.document.write('<img src="'+screenshot+'"/>');
-		//}
+		// { // open window with image
+		// 	var br = new ArrayBuffer(width*height*4);
+		// 	var bp = new Uint8Array(br);
+		// 	renderer.context.readPixels( 0, 0, width, height,
+		// 		renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, bp);
+		//
+		// 	var img = Potree.utils.pixelsArrayToImage(bp, width, height);
+		// 	var screenshot = img.src;
+		//
+		// 	//var w = window.open();
+		// 	document.write('<img src="'+screenshot+'"/>');
+		// }
 			
 		// find closest hit inside pixelWindow boundaries
 		var min = Number.MAX_VALUE;

@@ -189,9 +189,9 @@ Potree.utils = class{
 		let selectedPointcloud = null;
 		let closestDistance = Infinity;
 		let closestIntersection = null;
-		
+		let point = null;
 		for(let pointcloud of pointclouds){
-			let point = pointcloud.pick(renderer, camera, ray);
+			point = pointcloud.pick(renderer, camera, ray, {pickWindowSize : 81, pickOutsideClipRegion : false});
 			
 			if(!point){
 				continue;
@@ -203,6 +203,7 @@ Potree.utils = class{
 				closestDistance = distance;
 				selectedPointcloud = pointcloud;
 				closestIntersection = point.position;
+				point = point;
 			}
 		}
 		
@@ -210,13 +211,14 @@ Potree.utils = class{
 			return {
 				location: closestIntersection,
 				distance: closestDistance,
-				pointcloud: selectedPointcloud
+				pointcloud: selectedPointcloud,
+				point : point
 			};
 		}else{
 			return null;
 		}
-	};	
-		
+	};
+
 	static pixelsArrayToImage(pixels, width, height){
 		let canvas = document.createElement('canvas');
 		canvas.width = width;

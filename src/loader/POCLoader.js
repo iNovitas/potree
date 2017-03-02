@@ -53,6 +53,11 @@ Potree.POCLoader.load = function load(url, callback) {
 				}
 
 				let offset = min.clone();
+
+				if(fMno.globalShift)
+				{
+					Potree.globalShift = new THREE.Vector3(fMno.globalShift.dx,fMno.globalShift.dy,fMno.globalShift.dz);
+				}
 				
 				boundingBox.min.sub(offset);
 				boundingBox.max.sub(offset);
