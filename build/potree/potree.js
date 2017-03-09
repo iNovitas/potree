@@ -27,6 +27,8 @@ Potree.webgl = {
 	vbos: {}
 };
 
+Potree.globalShift = new THREE.Vector3();
+
 Potree.scriptPath = null;
 if(document.currentScript.src){
 		Potree.scriptPath = new URL(document.currentScript.src + "/..").href;
@@ -193,7 +195,7 @@ Potree.getLRU = function(){
 function updateVisibilityStructures(pointclouds, camera, renderer){
 	let frustums = [];
 	let camObjPositions = [];
-	let priorityQueue = new BinaryHeap(function(x){return 1 / x.weight;});
+	let priorityQueue = new BinaryHeap(function(x){return 1/x.weight;});
 	
 	for(let i = 0; i < pointclouds.length; i++){
 		let pointcloud = pointclouds[i];
@@ -270,6 +272,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 		let node = element.node;
 		let parent = element.parent;
 		let pointcloud = pointclouds[element.pointcloud];
+
 		
 		let box = node.getBoundingBox();
 		let frustum = frustums[element.pointcloud];
@@ -355,7 +358,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 			let projFactor = (0.5 * renderer.domElement.clientHeight) / (slope * distance);
 			let screenPixelRadius = radius * projFactor;
 			
-			if(screenPixelRadius < pointcloud.minimumNodePixelSize){
+			if(screenPixelRadius < pointcloud.minimumNodePixelSize && !viewer.fullresMode){
 				continue;
 			}
 			
@@ -378,7 +381,7 @@ Potree.updateVisibility = function(pointclouds, camera, renderer){
 	Potree.updateDEMs(renderer, visibleNodes);
 
 	return {
-		visibleNodes: visibleNodes, 
+		visibleNodes: visibleNodes,
 		numVisiblePoints: numVisiblePoints,
 		lowestSpacing: lowestSpacing
 	};
@@ -1764,6 +1767,11 @@ Potree.POCLoader.load = function load(url, callback) {
 				}
 
 				let offset = min.clone();
+
+				if(fMno.globalShift)
+				{
+					Potree.globalShift = new THREE.Vector3(fMno.globalShift.dx,fMno.globalShift.dy,fMno.globalShift.dz);
+				}
 				
 				boundingBox.min.sub(offset);
 				boundingBox.max.sub(offset);
@@ -7440,18 +7448,18 @@ Potree.PointCloudOctree = class extends Potree.PointCloudTree{
 			renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, pixels);
 
 
-		//{ // open window with image
-		//	var br = new ArrayBuffer(width*height*4);
-		//	var bp = new Uint8Array(br);
-		//	renderer.context.readPixels( 0, 0, width, height, 
-		//		renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, bp);
-		//	
-		//	var img = pixelsArrayToImage(bp, width, height);
-		//	var screenshot = img.src;
-		//	
-		//	var w = window.open();
-		//	w.document.write('<img src="'+screenshot+'"/>');
-		//}
+		// { // open window with image
+		// 	var br = new ArrayBuffer(width*height*4);
+		// 	var bp = new Uint8Array(br);
+		// 	renderer.context.readPixels( 0, 0, width, height,
+		// 		renderer.context.RGBA, renderer.context.UNSIGNED_BYTE, bp);
+		//
+		// 	var img = Potree.utils.pixelsArrayToImage(bp, width, height);
+		// 	var screenshot = img.src;
+		//
+		// 	//var w = window.open();
+		// 	document.write('<img src="'+screenshot+'"/>');
+		// }
 			
 		// find closest hit inside pixelWindow boundaries
 		var min = Number.MAX_VALUE;
@@ -8326,9 +8334,9 @@ Potree.utils = class{
 		let selectedPointcloud = null;
 		let closestDistance = Infinity;
 		let closestIntersection = null;
-		
+		let point = null;
 		for(let pointcloud of pointclouds){
-			let point = pointcloud.pick(renderer, camera, ray);
+			point = pointcloud.pick(renderer, camera, ray, {pickWindowSize : 81, pickOutsideClipRegion : false});
 			
 			if(!point){
 				continue;
@@ -8340,6 +8348,7 @@ Potree.utils = class{
 				closestDistance = distance;
 				selectedPointcloud = pointcloud;
 				closestIntersection = point.position;
+				point = point;
 			}
 		}
 		
@@ -8347,13 +8356,14 @@ Potree.utils = class{
 			return {
 				location: closestIntersection,
 				distance: closestDistance,
-				pointcloud: selectedPointcloud
+				pointcloud: selectedPointcloud,
+				point : point
 			};
 		}else{
 			return null;
 		}
-	};	
-		
+	};
+
 	static pixelsArrayToImage(pixels, width, height){
 		let canvas = document.createElement('canvas');
 		canvas.width = width;
@@ -11007,8 +11017,8 @@ Potree.GeoJSONExporter = class GeoJSONExporter{
 /**
  *
  * @author sigeom sa / http://sigeom.ch
- * @author Ioda-Net Sï¿½rl / https://www.ioda-net.ch/
- * @author Markus Schï¿½tz / http://potree.org
+ * @author Ioda-Net Sàrl / https://www.ioda-net.ch/
+ * @author Markus Schütz / http://potree.org
  *
  */
 
@@ -12355,6 +12365,7 @@ Potree.View = class{
 		this.yaw = Math.PI / 4;
 		this._pitch = -Math.PI / 4;
 		this.radius = 1;
+		this.roll = 0;
 		
 		this.maxPitch = Math.PI / 2;
 		this.minPitch = -Math.PI / 2;
@@ -12961,6 +12972,32 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 	setNavigationMode(value){
 		this.scene.view.navigationMode = value;
 	};
+
+	setProjectionMatrix(matrix)
+	{
+		this.scene.camera.projectionMatrix = matrix;
+	};
+
+	enableControlOverride()
+	{
+		this.overrideControls = true;
+	};
+
+	disableControlOverride()
+	{
+		this.overrideControls = false;
+	};
+
+	setOverrideEulerRotation(euler)
+	{
+		this.overrideEulerRotation = euler;
+	};
+
+	setOverridePosition(position)
+	{
+		this.overridePosition = position;
+	};
+
 	
 	setShowBoundingBox(value){
 		if(this.showBoundingBox !== value){
@@ -13404,7 +13441,12 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			
 			this.dispatchEvent({"type": "material_changed", "viewer": this});
 		}
-	}
+	};
+
+	forceFullResLoad(value)
+	{
+		this.fullresMode = value;
+	};
 	
 	getMaterial(){
 		return this.pointColorType;
@@ -13968,6 +14010,7 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			camera.near = result.lowestSpacing * 10.0;
 			camera.far = -this.getBoundingBox().applyMatrix4(camera.matrixWorldInverse).min.z;
 			camera.far = Math.max(camera.far * 1.5, 1000);
+
 		}
 		
 		
@@ -14012,7 +14055,20 @@ Potree.Viewer = class PotreeViewer extends THREE.EventDispatcher{
 			camera.rotation.order = "ZXY";
 			camera.rotation.x = Math.PI / 2 + this.scene.view.pitch;
 			camera.rotation.z = this.scene.view.yaw;
+			camera.rotation.y = this.scene.view.roll;
 		}
+
+		if(this.overrideControls)
+		{
+			camera.setRotationFromEuler(this.overrideEulerRotation);
+			this.scene.view.pitch = camera.rotation.x-Math.PI/2;
+			this.scene.view.yaw = camera.rotation.z+Math.PI/2;
+			this.scene.view.position = camera.position.clone();
+		}
+
+
+
+
 
 		{ // update clip boxes
 			//let boxes = this.scene.profiles.reduce( (a, b) => {return a.boxes.concat(b.boxes)}, []);
@@ -14174,7 +14230,11 @@ class PotreeRenderer{
 			let aspect = width / height;
 			
 			viewer.scene.camera.aspect = aspect;
-			viewer.scene.camera.updateProjectionMatrix();
+			if(!viewer.overrideControls)
+			{
+				viewer.scene.camera.updateProjectionMatrix();
+			}
+
 			
 			viewer.renderer.setSize(width, height);
 		}
