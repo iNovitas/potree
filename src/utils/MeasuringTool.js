@@ -72,6 +72,7 @@ Potree.MeasuringTool = class MeasuringTool extends THREE.EventDispatcher{
 			if(e.button === THREE.MOUSE.LEFT){
 				
 				measure.addMarker(measure.points[measure.points.length - 1].position.clone());
+				this.pointSetCbf(measure);
 				
 				if(measure.points.length >= measure.maxMarkers){
 					cancel.callback();
