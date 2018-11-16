@@ -614,4 +614,5 @@ let encodeShader = function(fileName, varname, opt){
 gulp.task('dist', function() {
 	gulp.run("build");
 	gulp.src(['build/**/*']).pipe(gulp.dest('dist/'));
+	gulp.src(['libs/**/*']).pipe(gulp.dest('dist/libs'));
 });
