@@ -609,3 +609,9 @@ let encodeShader = function(fileName, varname, opt){
 
 	return through(bufferContents, endStream);
 };
+
+
+gulp.task('dist', function() {
+	gulp.run("build");
+	gulp.src(['build/**/*']).pipe(gulp.dest('dist/'));
+});
