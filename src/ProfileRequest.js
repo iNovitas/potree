@@ -340,6 +340,12 @@ Potree.ProfileRequest = class ProfileRequest {
 					}
 
 					points.data[attributeName] = filteredBuffer;
+
+					if(attributeName == "gpsTime")
+					{
+						let buffercopy = new Float64Array(points.data["gpsTime"]);
+						points.data["gpsTimeAbsolute"] = buffercopy.map((t)=>{return t+node.gpsTime.offset;});
+					}
 				}
 
 				points.data['mileage'] = mileage;
