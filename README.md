@@ -1,3 +1,6 @@
+#Important
+
+This module is part of [iNovitas WebRailDiagnostics](https://github.com/iNovitas/webraildiagnostics) and is there included as a git submodule.
 
 # README
 
