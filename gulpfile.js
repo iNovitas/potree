@@ -530,7 +530,13 @@ let encodeShader = function(fileName, varname, opt){
 
 
 gulp.task('dist', function() {
-	gulp.run("build");
+
+	gulp.run('build');
+	exec('rollup -c', function (err, stdout, stderr) {
+		console.log(stdout);
+		console.log(stderr);
+		//cb(err);
+	});
 	gulp.src(['build/**/*']).pipe(gulp.dest('dist/'));
 	gulp.src(['libs/**/*']).pipe(gulp.dest('dist/libs'));
 });
